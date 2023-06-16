@@ -1,0 +1,109 @@
+{% extends "base.html.jinja" %}
+{% block title %}
+Nazwa produktu
+{% endblock title %}
+{% block content %}
+<div class="col-8">
+    <canvas id="stars"></canvas>
+
+</div>
+<div class="col-4">
+    <canvas id="recommendations"></canvas>
+
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+    const stars = [
+        { stars: 0.0, count: 0, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { stars: 0.5, count: 3, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { stars: 1.0, count: 1, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { stars: 1.5, count: 2, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { stars: 2.0, count: 1, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { stars: 2.5, count: 0, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { stars: 3.0, count: 5, bgcolor: "#B0E0E6", bgborder: "#4682B4" },
+        { stars: 3.5, count: 3, bgcolor: "#B0E0E6", bgborder: "#4682B4" },
+        { stars: 4.0, count: 19, bgcolor: "#BDFCC9", bgborder: "#228B22" },
+        { stars: 4.5, count: 19, bgcolor: "#BDFCC9", bgborder: "#228B22" },
+        { stars: 5.0, count: 79, bgcolor: "#BDFCC9", bgborder: "#228B22" },
+    ];
+
+    new Chart(
+        document.getElementById('stars'),
+        {
+            type: 'bar',
+            data: {
+                labels: stars.map(row => row.stars),
+                datasets: [
+                    {
+                        label: 'Liczba opinii',
+                        data: stars.map(row => row.count),
+                        backgroundColor: stars.map(row => row.bgcolor),
+                        borderColor: stars.map(row => row.bgborder),
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Rozkład liczby gwiazdek w opiniach konsumentów'
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Liczba gwiazdek'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Liczba opinii'
+                        }
+                    }
+                },
+            },
+        }
+    );
+    const recommendations = [
+        { recommendation: "Nie polecam", count: 7, bgcolor: "#FFB6C1", bgborder: "#DC143C" },
+        { recommendation: "Nie mam zdania", count: 8, bgcolor: "#B0E0E6", bgborder: "#4682B4" },
+        { recommendation: "Polecam", count: 117, bgcolor: "#BDFCC9", bgborder: "#228B22" },
+    ];
+    new Chart(
+        document.getElementById('recommendations'),
+        {
+            type: 'doughnut',
+            data: {
+                labels: recommendations.map(row => row.recommendation),
+                datasets: [
+                    {
+                        label: 'Liczba opinii',
+                        data: recommendations.map(row => row.count),
+                        backgroundColor: recommendations.map(row => row.bgcolor),
+                        borderColor: recommendations.map(row => row.bgborder),
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Rozkład liczby rekomendacji w opiniach konsumentów'
+                    },
+                },
+            },
+        }
+    );
+</script>
+{% endblock scripts %}
