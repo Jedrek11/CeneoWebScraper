@@ -5,6 +5,7 @@ import os
 import json
 import requests
 import pandas as pd
+import numpy as np
 from bs4 import BeautifulSoup
 
 @app.route('/')
@@ -32,19 +33,37 @@ def extract():
                 url = "https://www.ceneo.pl"+utils.get_tag_content(page_dom,"a.pagination__next","href")
             except TypeError:
                 url = None
-        try:
-            os.mkdir("./app/data")
-            os.mkdir("./app/data/opinions")
-        except FileExistsError:
-            pass
+        utils.create_data_dir("opinions")
+        utils.create_data_dir("stats")
         with open(f"./app/data/opinions/{product_code}.json", "w", encoding="UTF-8") as jf:
             json.dump(opinions_all, jf, indent=4, ensure_ascii=False)
+        opinions = pd.DataFrame.from_dict(opinions_all)
+        opinions.stars = opinions.stars.map(lambda x: float(x.split("/")[0].replace(",",".")))
+        stats = {
+            'opinions_count': int(opinions.shape[0]),
+            'pros_count': int(opinions.pros.map(bool).sum()),
+            'cons_count': int(opinions.cons.map(bool).sum()),
+            'average_score': float(opinions.stars.mean())
+        }
+        stars = opinions.stars.value_counts().reindex(list(np.arange(0,5.5,0.5)), fill_value=0)
+        recommendations = opinions["recommendation"].value_counts(dropna = False).reindex(["Polecam","Nie polecam",None], fill_value=0)
+        stats['stars'] = stars.to_dict()
+        stats['recommendations'] = recommendations.to_dict()
+        with open(f"app/data/stats/{product_code}.json", "w", encoding="UTF-8") as jf:
+            json.dump(stats, jf, indent=4, ensure_ascii=False)
         return redirect(url_for('product', code=product_code))
     return render_template('extract.html.jinja')
 
 @app.route('/products')
 def products():
-    return render_template('products.html.jinja')
+    files = os.listdir("app/data/stats")
+    products = []
+    for file in files:
+        with open(f"app/data/stats/{file}", "r", encoding="UTF-8") as jf:
+            product = json.load(jf)
+        product["product_code"] = file.removesuffix(".json")
+        products.append(product)
+    return render_template('products.html.jinja', products=products)
 
 @app.route('/product/<code>')
 def product(code):

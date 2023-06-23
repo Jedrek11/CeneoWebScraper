@@ -1,3 +1,5 @@
+import os
+
 def get_tag_content(ancestor, selector=None, attribute=None, return_list=False):
     try:
         if return_list:
@@ -24,3 +26,16 @@ selectors = {
     "pros": ("div.review-feature__title--positives ~ div.review-feature__item", None, True),
     "cons": ("div.review-feature__title--negatives ~ div.review-feature__item", None, True)
 }
+
+def create_data_dir(name = None):
+    if name:
+        try:
+            create_data_dir()
+            os.mkdir(f"./app/data/{name}")
+        except FileExistsError:
+            pass
+    else:
+        try:
+            os.mkdir("./app/data")
+        except FileExistsError:
+            pass
