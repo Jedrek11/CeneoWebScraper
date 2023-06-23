@@ -4,7 +4,7 @@ Pobieranie opinii o produkcie
 {% endblock title %}
 {% block content %}
 <div class="col">
-    <form method="POST" action="">
+    <form method="POST" action="{{url_for('extract')}}">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
                 <label for="product_code" class="col-form-label">Kod produktu</label>
